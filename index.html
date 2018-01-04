@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Занесите имена в таблицу</title>
+     <style>
+        table {
+            border: 1px solid black;
+            text-align: center;
+            border-collapse: collapse;
+            margin: 20px auto;
+            position: absolute;
+            top: 0px;
+            left: 300px;
+        }
+         
+        td, th {
+            border: 1px solid grey;
+            padding: 5px;
+        }
+        th {
+            cursor: pointer;
+         }
+         
+        input {
+            margin-top: 10px;
+        }
+         
+         span {
+             float: left;
+             margin-top: 0px;
+             
+         }
+         p {
+             width: 250px;
+             text-align: justify;
+         }
+    </style>
+</head>
+<body>
+    <input type="text" id='userData' placeholder="Фамилия Имя Возраст" value="">
+    <p>Для ввода данных нажмите Enter</p>
+    <p>Для изменения данных &quot;кликните&quot; в необходимую ячейку таблицы</p>
+    <table id='userTable'>
+       <thead>
+            <tr>
+                <th title="Нажмите для сортировки">№</th>
+                <th title="Нажмите для сортировки">Фамилия</th>
+                <th title="Нажмите для сортировки">Имя</th>
+                <th title="Нажмите для сортировки">Возраст</th>
+            </tr>
+       </thead>
+       <tbody>
+       </tbody>
+    </table>
+    
+    <script>
+        var input = document.getElementById('userData');
+        var table = document.getElementById('userTable');
+        var number = 0;
+        var upOrDown = 1;
+        table.addEventListener('click', change);
+        table.addEventListener('click', sort);
+        input.addEventListener('keypress', addData);
+        sortAll(table.getElementsByTagName('th')[0]);
+        function addData() {
+            var code = event.keyCode;
+            var tr = document.createElement('tr');
+            var arr = input.value.split(' ');
+            var tBody = table.tBodies[0];
+            if (code == '13') {
+                number++;
+                tr.innerHTML = '<th>' + number + '</th><td>' + arr[0] + '</td><td>' + arr[1] + '</td><td>' + Number(arr[2]) + '</td>';
+                tBody.appendChild(tr);
+                input.value = '';
+                if (isNumeric(arr[0]) || isNumeric(arr[1]) || !isNumeric(arr[2])) {
+                    alert('Проверьте правильность ввода данных!');
+                }
+            }
+        }
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);s
+        }
+        function isEmpty(str) {
+            return (!str || str.length === 0) 
+        }
+
+        function change(event) {
+            if (event.target.tagName == 'TH') return; // на заголовке таблицы эта функция не сработает
+            event.target.innerHTML = prompt("Введите новые данные");
+            if (isEmpty(event.target.innerHTML)) {
+                confirm('Вы ничего не ввели!');
+            }
+        }
+        
+        function sort(event) {
+            if (event.target.tagName !== 'TH') return;  // сортировка сработает только при нажатии на заголовок таблицы 
+            sortAll(event.target);
+        }
+        function sortAll(th) {
+            var rows = getArray(table.tBodies[0].rows);
+            var cellNumber = th.cellIndex;
+            sortRows(rows, cellNumber);
+            upOrDown = -upOrDown + 1;
+            printSort(rows);
+        }
+        function getArray(data) {
+            var arr = [];
+            for (var i = 0; i < data.length; i++) {
+                arr.push(data[i]);
+            }
+            return arr;
+        }
+        function sortRows(rows, cellNumber) {
+            rows.sort(sort);
+            function sort(x, y) {
+                var val_x = x.children[cellNumber].innerHTML;
+                var val_y = y.children[cellNumber].innerHTML;
+                if (parseFloat(val_x)) {
+                    val_x = parseFloat(val_x);
+                    val_y = parseFloat(val_y);
+                }
+                if(upOrDown) {
+                    return val_x > val_y;
+                } else {
+                    return val_y > val_x;
+                }
+            }
+        }
+		function printSort(row) {
+			var tbody = table.tBodies[0];
+			tbody.innerHTML = '';
+			for (var i = 0; i < row.length; i++) {
+				tbody.appendChild(row[i]);
+			}
+		}
+
+    </script>
+</body>
+</html>
